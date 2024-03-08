@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management Money Tracker</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            background: linear-gradient(to right, #00b4db, #0083b0);
+            color: #fff;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        .input-section {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .input-section label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .input-section input[type="number"],
+        .input-section input[type="date"] {
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .input-section button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .expenses-list {
+            margin: 20px;
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tfoot td {
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hospital Management Money Tracker</h1>
+    <div class="input-section">
+        <label for="category-select">Category:</label>
+        <select id="category-select">
+            <option value="Medical Supplies">Medical Supplies</option>
+            <option value="Staff Salaries">Staff Salaries</option>
+            <option value="Equipment Maintenance">Equipment Maintenance</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Medicine">Medicine</option>
+        </select>
+        <label for="amount-input">Amount:</label>
+        <input type="number" id="amount-input">
+        <label for="date-input">Date:</label>
+        <input type="date" id="date-input">
+        <button id="add-btn">Add</button>
+    </div>
+    <div class="expenses-list">
+        <h2>Expenses List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody id="expense-table-body"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3">Total:</td>
+                    <td id="total-amount"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+        let expenses = [];
+        let totalAmount = 0;
+
+        const categorySelect = document.getElementById('category-select');
+        const amountInput = document.getElementById('amount-input');
+        const dateInput = document.getElementById('date-input');
+        const addBtn = document.getElementById('add-btn');
+        const expenseTableBody = document.getElementById('expense-table-body');
+        const totalAmountCell = document.getElementById('total-amount');
+
+        addBtn.addEventListener('click', function() {
+            const category = categorySelect.value;
+            const amount = Number(amountInput.value);
+            const date = dateInput.value;
+
+            if (category === '') {
+                alert('Please select a category');
+                return;
+            }
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            if (date === '') {
+                alert('Please select a date');
+                return;
+            }
+
+            expenses.push({ category, amount, date });
+
+            totalAmount += amount;
+            totalAmountCell.textContent = totalAmount;
+
+            const newRow = expenseTableBody.insertRow();
+
+            const categoryCell = newRow.insertCell();
+            const amountCell = newRow.insertCell();
+            const dateCell = newRow.insertCell();
+            const deleteCell = newRow.insertCell();
+
+            const deleteBtn = document.createElement('button');
+
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.addEventListener('click', function() {
+                const index = expenses.findIndex(expense => expense.date === dateCell.textContent);
+                if (index !== -1) {
+                    totalAmount -= expenses[index].amount;
+                    totalAmountCell.textContent = totalAmount;
+                    expenses.splice(index, 1);
+                }
+                expenseTableBody.removeChild(newRow);
+            });
+
+            categoryCell.textContent = category;
+            amountCell.textContent = amount;
+            dateCell.textContent = date;
+            deleteCell.appendChild(deleteBtn);
+        });
+    </script>
+</body>
+</html>
